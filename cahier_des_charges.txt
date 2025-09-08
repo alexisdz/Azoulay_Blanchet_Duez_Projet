@@ -1,0 +1,40 @@
+space invaders
+
+- map
+	- taille
+	- grille
+	- (murs ?? -> a la fin)
+
+- perso principal
+	- mouvements 
+	- arme
+	- vies
+	- score
+
+- ennemis
+	- deplacements
+	- types
+	- armes (enfonction du type)
+
+- balles
+	- trajectoire
+	- apparence
+	- physique
+
+- niveaux
+	- ennemis plus fort
+	- vitesse...
+
+
+
+codé avec pygame en python
+
+Plan :
+	1) menu acceuil
+	2) map
+	3) perso + mouvement + balles
+	4) ennemis
+	5) menu defaite/victoire
+	6) fin du jeu
+	7) gestions des niveaux
+	8) tests du jeu
