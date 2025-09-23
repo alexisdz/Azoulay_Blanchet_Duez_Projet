@@ -13,6 +13,5 @@ game = Game(screen_width, screen_height)
 # Lancement du jeu
 game.run() 
 
-
 # Fermeture propre
 pygame.quit()

@@ -1,6 +1,7 @@
 import pygame
 import os
 from animation import Animation
+from laser import Laser
 
 class Player(pygame.sprite.Sprite):
     # Initialisation du joueur
@@ -24,6 +25,9 @@ class Player(pygame.sprite.Sprite):
         # Position et taille du joueur
         self.rect = self.image.get_rect(midbottom = pos)
 
+        #Création de laser
+        self.lasers = pygame.sprite.Group()
+
     #gestion des mouvements de gauche à droite
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -32,6 +36,10 @@ class Player(pygame.sprite.Sprite):
             self.rect.x += self.speed
         elif keys[pygame.K_LEFT]:
             self.rect.x -= self.speed
+
+        # Tir uniquement si aucun laser actif
+        if keys[pygame.K_SPACE] and len(self.lasers) == 0:
+            self.shoot_laser()
 
     #gestion des collisions avec les limites de l'écran
     def constraint(self):
@@ -45,11 +53,18 @@ class Player(pygame.sprite.Sprite):
         self.animations.update()
         self.image = self.animations.get_image()
 
-    # Affichage du joueur
+    # Affichage du joueur et du laser
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+        self.lasers.draw(screen)           
+
+    def shoot_laser(self):
+        # Tire un laser depuis la position actuelle du joueur
+        self.lasers.add(Laser(self.rect.center, -8, self.rect.bottom))
+
 
     def update(self):
         self.animate()
         self.get_input()
         self.constraint()
+        self.lasers.update()
