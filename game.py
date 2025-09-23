@@ -3,11 +3,11 @@ from player import Player
 
 class Game:
     # Initialisation du jeu
-    def __init__(self, screen):
-        self.screen = screen               # Surface d'affichage
+    def __init__(self, screen_width, screen_height):
+        self.screen = pygame.display.set_mode((screen_width, screen_height))               # Surface d'affichage
         self.running = True                # État du jeu
         self.clock = pygame.time.Clock()   # Gestion du temps
-        self.player = Player(0, 0)         # Création du joueur
+        self.player = Player( (screen_width / 2,screen_height), screen_width)         # Création du joueur
 
     # Gestion des évènements
     def handling_events(self):
@@ -16,29 +16,10 @@ class Game:
             if event.type == pygame.QUIT: 
                 self.running = False  
 
-        # Gestion des touches
-        keys = pygame.key.get_pressed()
-
-        # Déplacement horizontal
-        if keys[pygame.K_LEFT]:
-            self.player.velocity[0] = -1
-        elif keys[pygame.K_RIGHT]:
-            self.player.velocity[0] = 1
-        else:
-            self.player.velocity[0] = 0
-
-        # Déplacement vertical
-        if keys[pygame.K_UP]:
-            self.player.velocity[1] = -1
-        elif keys[pygame.K_DOWN]:
-            self.player.velocity[1] = 1
-        else:
-            self.player.velocity[1] = 0  
 
     # Mise à jour du jeu
     def update(self):
-        self.player.move()
-        self.player.animate()
+        self.player.update()
 
     # Affichage du jeu
     def display(self):
