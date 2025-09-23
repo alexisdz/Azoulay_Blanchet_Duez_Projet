@@ -1,11 +1,14 @@
-import pygame             # Pygame pour créer le jeu
-from game import Game     # Import de la classe Game
+import pygame            
+from game import Game    
 
-pygame.init() # Initialise Pygame
+pygame.init() 
 
-screen = pygame.display.set_mode((800, 600)) # Crée la fenêtre du jeu
-game = Game(screen) # Crée une instance du jeu       
+# Instanciation d'une fenêtre et du jeu
+screen = pygame.display.set_mode((800, 600)) 
+game = Game(screen)     
 
-game.run() # Lance la boucle principale
+# Lancement du jeu
+game.run() 
 
-pygame.quit() # Ferme Pygame à la fin
+# Fermeture propre
+pygame.quit()
