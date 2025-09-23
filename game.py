@@ -2,21 +2,21 @@ import pygame
 from player import Player
 
 class Game:
-    # Initialisation des composants
+    # Initialisation du jeu
     def __init__(self, screen):
-        self.screen = screen              
-        self.running = True               
-        self.clock = pygame.time.Clock()
-        self.player = Player(0, 0)
+        self.screen = screen               # Surface d'affichage
+        self.running = True                # État du jeu
+        self.clock = pygame.time.Clock()   # Gestion du temps
+        self.player = Player(0, 0)         # Création du joueur
 
     # Gestion des évènements
     def handling_events(self):
         for event in pygame.event.get():  
-            # Gestion évènement de fermeture
+            # Fermeture de la fenêtre
             if event.type == pygame.QUIT: 
                 self.running = False  
 
-        # Gestion des touches directionnelles
+        # Gestion des touches
         keys = pygame.key.get_pressed()
 
         # Déplacement horizontal
@@ -35,14 +35,16 @@ class Game:
         else:
             self.player.velocity[1] = 0  
 
+    # Mise à jour du jeu
     def update(self):
         self.player.move()
         self.player.animate()
 
+    # Affichage du jeu
     def display(self):
-        self.screen.fill("black")
-        self.player.draw(self.screen)
-        pygame.display.flip()
+        self.screen.fill("black")          # Nettoyage de l'écran
+        self.player.draw(self.screen)      # Dessin du joueur
+        pygame.display.flip()              # Rafraîchissement
 
     # Boucle principale
     def run(self):
