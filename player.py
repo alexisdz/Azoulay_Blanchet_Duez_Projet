@@ -60,7 +60,7 @@ class Player(pygame.sprite.Sprite):
 
     def shoot_laser(self):
         # Tire un laser depuis la position actuelle du joueur
-        self.lasers.add(Laser(self.rect.center, -8, self.rect.bottom))
+        self.lasers.add(Laser(self.rect.midtop, -8, self.rect.bottom))
 
 
     def update(self):
