@@ -62,9 +62,15 @@ class Game:
         for enemy in all_enemies:
             if enemy.rect.right >= self.screen_width - 10: # change la direction du groupe si un ennemi touche le bord
                 self.enemy_direction = -1
-
+                self.enemy_move_down(2)
             elif enemy.rect.left <= 10:
                 self.enemy_direction = 1
+                self.enemy_move_down(2)
+
+    def enemy_move_down(self,distance):
+	    if self.enemies:
+		    for enemy in self.enemies.sprites():
+			    enemy.rect.y += distance
 
                 
                 
