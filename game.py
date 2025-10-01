@@ -9,7 +9,10 @@ class Game:
         self.running = True                # État du jeu
         self.clock = pygame.time.Clock()   # Gestion du temps
         self.player = Player( (screen_width / 2,screen_height), screen_width)         # Création du joueur
+        
+        self.walls = pygame.sprite.Group()
         self.wall = Wall(100, 100)
+        self.walls.add(self.wall)
 
     # Gestion des évènements
     def handling_events(self):
@@ -27,15 +30,30 @@ class Game:
     def display(self):
         self.screen.fill("black")          # Nettoyage de l'écran
         self.player.draw(self.screen)      # Dessin du joueur
-        self.wall.draw(self.screen)
+        self.walls.draw(self.screen)
         pygame.display.flip()              # Rafraîchissement
 
     # Boucle principale
     def run(self):
         while self.running:               
             self.handling_events()        
-            self.update()                 
+            self.update() 
+            self.laser_hits_wall()                
             self.display()                
             self.clock.tick(60)    
+       
+    def laser_hits_wall(self):
+        # Vérifier collision entre lasers et murs
+        collisions = pygame.sprite.groupcollide(
+            self.player.lasers,  # groupe de lasers
+            self.walls,          # groupe de murs
+            True,                # supprime le laser après collision
+            False                # ne supprime pas le mur automatiquement
+        )
 
-           
+        for _, hit_walls in collisions.items():
+            for wall in hit_walls:
+                wall.life -= 1    # réduire la vie du mur
+                wall.update()     # mettre à jour l'animation
+                if wall.life <= 0:
+                    wall.kill()   # supprime le mur si sa vie est épuisée
