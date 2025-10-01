@@ -41,6 +41,7 @@ class Enemy(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
 
-    def update(self):
+    def update(self, direction):
         self.animate()
         self.constraint()
+        self.rect.x += self.speed * direction

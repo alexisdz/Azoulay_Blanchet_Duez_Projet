@@ -9,8 +9,11 @@ class Game:
         self.running = True                # État du jeu
         self.clock = pygame.time.Clock()   # Gestion du temps
         self.player = Player( (screen_width / 2,screen_height), screen_width)         # Création du joueur
+        
+        # Gestion des ennemies
         self.enemies = pygame.sprite.Group()
         self.enemy_setup(rows = 6, cols = 8,screen_width = screen_width)
+        self.enemy_direction = 1
 
     # Gestion des évènements
     def handling_events(self):
@@ -23,7 +26,7 @@ class Game:
     # Mise à jour du jeu
     def update(self):
         self.player.update()
-        self.enemies.update()
+        self.enemies.update(self.enemy_direction)
 
     # Affichage du jeu
     def display(self):
