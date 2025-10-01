@@ -5,11 +5,12 @@ from walls import Wall
 class Game:
     # Initialisation du jeu
     def __init__(self, screen_width, screen_height):
-        self.screen = pygame.display.set_mode((screen_width, screen_height))               # Surface d'affichage
-        self.running = True                # État du jeu
-        self.clock = pygame.time.Clock()   # Gestion du temps
-        self.player = Player( (screen_width / 2,screen_height), screen_width)         # Création du joueur
+        self.screen = pygame.display.set_mode((screen_width, screen_height)) # Surface d'affichage
+        self.running = True # État du jeu
+        self.clock = pygame.time.Clock() # Gestion du temps
+        self.player = Player((screen_width/2, screen_height), screen_width) # Création du joueur
         
+        # Création des murs
         self.walls = pygame.sprite.Group()
         self.wall = Wall(100, 100)
         self.walls.add(self.wall)
@@ -30,7 +31,7 @@ class Game:
     def display(self):
         self.screen.fill("black")          # Nettoyage de l'écran
         self.player.draw(self.screen)      # Dessin du joueur
-        self.walls.draw(self.screen)
+        self.walls.draw(self.screen)       # Dessin des murs
         pygame.display.flip()              # Rafraîchissement
 
     # Boucle principale
@@ -53,7 +54,4 @@ class Game:
 
         for _, hit_walls in collisions.items():
             for wall in hit_walls:
-                wall.life -= 1    # réduire la vie du mur
-                wall.update()     # mettre à jour l'animation
-                if wall.life <= 0:
-                    wall.kill()   # supprime le mur si sa vie est épuisée
+                wall.update()

@@ -34,4 +34,7 @@ class Wall(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
         
     def update(self):
-        self.animate()
+        self.life -= 1    # réduire la vie du mur
+        self.animate()     # mettre à jour l'animation
+        if self.life <= 0:
+            self.kill()   # supprime le mur si sa vie est épuisée
