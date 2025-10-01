@@ -9,7 +9,9 @@ class Game:
         self.running = True                # État du jeu
         self.clock = pygame.time.Clock()   # Gestion du temps
         self.player = Player( (screen_width / 2,screen_height), screen_width)         # Création du joueur
-        
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+
         # Gestion des ennemies
         self.enemies = pygame.sprite.Group()
         self.enemy_setup(rows = 6, cols = 8,screen_width = screen_width)
@@ -27,6 +29,7 @@ class Game:
     def update(self):
         self.player.update()
         self.enemies.update(self.enemy_direction)
+        self.enemy_position_checker()
 
     # Affichage du jeu
     def display(self):
@@ -52,6 +55,17 @@ class Game:
                 if row_index == 0: enemy_sprite = Enemy((x,y), screen_width, 'piruru')
                 else : enemy_sprite = Enemy((x,y), screen_width, 'blublu')
                 self.enemies.add(enemy_sprite)
+
+    # Gestion des collisions des ennemies
+    def enemy_position_checker(self):
+        all_enemies = self.enemies.sprites()
+        for enemy in all_enemies:
+            if enemy.rect.right >= self.screen_width - 10: # change la direction du groupe si un ennemi touche le bord
+                self.enemy_direction = -1
+
+            elif enemy.rect.left <= 10:
+                self.enemy_direction = 1
+
                 
                 
                 
