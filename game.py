@@ -1,6 +1,9 @@
 import pygame
 from player import Player
 from enemy import Enemy
+from laser import Laser
+from random import choice
+
 
 class Game:
     # Initialisation du jeu
@@ -8,7 +11,7 @@ class Game:
         self.screen = pygame.display.set_mode((screen_width, screen_height))               # Surface d'affichage
         self.running = True                # État du jeu
         self.clock = pygame.time.Clock()   # Gestion du temps
-        self.player = Player( (screen_width / 2,screen_height), screen_width)         # Création du joueur
+        self.player = pygame.sprite.GroupSingle(Player((screen_width / 2,screen_height), screen_width))         # Création du joueur
         self.screen_width = screen_width
         self.screen_height = screen_height
 
@@ -30,12 +33,14 @@ class Game:
         self.player.update()
         self.enemies.update(self.enemy_direction)
         self.enemy_position_checker()
+        self.collision_checks()
 
     # Affichage du jeu
     def display(self):
         self.screen.fill("black")          # Nettoyage de l'écran
         self.player.draw(self.screen)      # Dessin du joueur
         self.enemies.draw(self.screen)      # Dessin des ennemis
+        self.player.sprite.lasers.draw(self.screen)
         pygame.display.flip()              # Rafraîchissement
 
     # Boucle principale
@@ -67,13 +72,17 @@ class Game:
                 self.enemy_direction = 1
                 self.enemy_move_down(2)
 
-    def enemy_move_down(self,distance):
-	    if self.enemies:
-		    for enemy in self.enemies.sprites():
-			    enemy.rect.y += distance
+    def enemy_move_down(self, distance):
+        if self.enemies:
+            for enemy in self.enemies.sprites():
+                enemy.rect.y += distance
 
-                
-                
-                
-                
-                
+    
+    def collision_checks(self):
+        # player lasers 
+        if self.player.sprite.lasers:
+            for laser in self.player.sprite.lasers:
+                # obstacle collisions
+                if pygame.sprite.spritecollide(laser,self.enemies,True):
+                    laser.kill()
+					
