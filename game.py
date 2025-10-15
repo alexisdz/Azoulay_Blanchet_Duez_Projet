@@ -1,8 +1,8 @@
 import pygame
 from player import Player
-from enemy import Enemy
+from enemy import Enemy, Extra
 from laser import Laser
-from random import choice
+from random import choice, randint
 
 
 class Game:
@@ -20,6 +20,11 @@ class Game:
         self.enemy_setup(rows = 6, cols = 8,screen_width = screen_width)
         self.enemy_direction = 1
 
+        
+		# Gestion de l'ennemie extra
+        self.extra = pygame.sprite.GroupSingle()
+        self.extra_spawn_time = randint(40,80)
+
     # Gestion des évènements
     def handling_events(self):
         for event in pygame.event.get():  
@@ -32,14 +37,18 @@ class Game:
     def update(self):
         self.player.update()
         self.enemies.update(self.enemy_direction)
+        self.extra.update()
+
         self.enemy_position_checker()
         self.collision_checks()
+        self.extra_enemy_timer()
 
     # Affichage du jeu
     def display(self):
         self.screen.fill("black")          # Nettoyage de l'écran
         self.player.draw(self.screen)      # Dessin du joueur
         self.enemies.draw(self.screen)      # Dessin des ennemis
+        self.extra.draw(self.screen)        #Dessin de l'ennemi extra
         self.player.sprite.lasers.draw(self.screen)
         pygame.display.flip()              # Rafraîchissement
 
@@ -57,8 +66,12 @@ class Game:
                 x = col_index * x_distance + x_offset
                 y = row_index * y_distance + y_offset
                 
-                if row_index == 0: enemy_sprite = Enemy((x,y), screen_width, 'piruru')
-                else : enemy_sprite = Enemy((x,y), screen_width, 'blublu')
+                if row_index < 2: # Lignes 0 et 1 (les deux du haut)
+                    enemy_sprite = Enemy((x,y), screen_width, 'bruh')
+                elif row_index < 4: # Lignes 2 et 3 (les deux du milieu)
+                    enemy_sprite = Enemy((x,y), screen_width, 'piruru')
+                else: # Lignes 4 et 5 (les deux dernières)
+                    enemy_sprite = Enemy((x,y), screen_width, 'sgriiipapa')
                 self.enemies.add(enemy_sprite)
 
     # Gestion des collisions des ennemies
@@ -77,6 +90,12 @@ class Game:
             for enemy in self.enemies.sprites():
                 enemy.rect.y += distance
 
+    def extra_enemy_timer(self):#gestion de l'ennemi bonus
+        self.extra_spawn_time -= 1
+        if self.extra_spawn_time <= 0:
+            self.extra.add(Extra(choice(['right','left']),self.screen_width))#choix aleatoire si l'ennemi apprait à gauche ou à droite
+            self.extra_spawn_time = randint(400,800) # cooldown pour aleatoire sur l'apparition de l'ennemi
+
     
     def collision_checks(self):
         # player lasers 
@@ -84,5 +103,7 @@ class Game:
             for laser in self.player.sprite.lasers:
                 # obstacle collisions
                 if pygame.sprite.spritecollide(laser,self.enemies,True):
+                    laser.kill()
+                if pygame.sprite.spritecollide(laser, self.extra, True):
                     laser.kill()
 					

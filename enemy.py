@@ -4,14 +4,14 @@ from animation import Animation
 
 class Enemy(pygame.sprite.Sprite):
     # Initialisation du joueur
-    def __init__(self, pos, constraint, enemy='blublu'):
+    def __init__(self, pos, constraint, enemy='sgriiipapa'):
         super().__init__()
         dir_file = os.path.join(os.path.dirname(__file__), 'assets', enemy)
 
         # Chargement de l'image par défaut
         self.image = pygame.image.load(os.path.join(dir_file, enemy+'_0.png'))
 
-        self.speed = 5
+        self.speed = 3
         self.max_x_constraint = constraint
 
         # Chargement de toutes les frames pour l'animation
@@ -45,3 +45,21 @@ class Enemy(pygame.sprite.Sprite):
         self.animate()
         self.constraint()
         self.rect.x += self.speed * direction
+
+class Extra(Enemy): #class de l'ennemi bonus
+    def __init__(self, side, screen_width):
+
+        if side == 'right': #si l'ennemi apparait à droite ou à gauche
+            x = screen_width + 50
+            self.speed = -3  
+        else:
+            x = -50
+            self.speed = 3   
+        
+        start_pos = (x, 50)
+
+        super().__init__(pos=start_pos, constraint=screen_width, enemy='extra')
+
+    def update(self):
+        self.animate() 
+        self.rect.x += self.speed
