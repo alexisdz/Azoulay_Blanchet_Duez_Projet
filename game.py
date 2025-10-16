@@ -9,10 +9,10 @@ from walls import Wall
 class Game:
     # Initialisation du jeu
     def __init__(self, screen_width, screen_height):
-        self.screen = pygame.display.set_mode((screen_width, screen_height))               # Surface d'affichage
+        self.screen = pygame.display.set_mode((screen_width, screen_height)) # Surface d'affichage
         self.running = True                # État du jeu
         self.clock = pygame.time.Clock()   # Gestion du temps
-        self.player = pygame.sprite.GroupSingle(Player((screen_width / 2,screen_height), screen_width))         # Création du joueur
+        self.player = pygame.sprite.GroupSingle(Player((screen_width / 2,screen_height), screen_width)) # Création du joueur
         self.screen_width = screen_width
         self.screen_height = screen_height
 
@@ -20,15 +20,12 @@ class Game:
         self.enemies = pygame.sprite.Group()
         self.enemy_setup(rows = 6, cols = 8,screen_width = screen_width)
         self.enemy_direction = 1
-
         
 		# Gestion de l'ennemie extra
         self.extra = pygame.sprite.GroupSingle()
         self.extra_spawn_time = randint(40,80)
-        self.screen = pygame.display.set_mode((screen_width, screen_height)) # Surface d'affichage
         self.running = True # État du jeu
         self.clock = pygame.time.Clock() # Gestion du temps
-        self.player = Player((screen_width/2, screen_height), screen_width) # Création du joueur
         
         # Création des murs
         self.walls = pygame.sprite.Group()
@@ -141,7 +138,7 @@ class Game:
     def laser_hits_wall(self):
         # Vérifier collision entre lasers et murs
         collisions = pygame.sprite.groupcollide(
-            self.player.lasers,  # groupe de lasers
+            self.player.sprite.lasers,  # groupe de lasers
             self.walls,          # groupe de murs
             True,                # supprime le laser après collision
             False                # ne supprime pas le mur automatiquement
