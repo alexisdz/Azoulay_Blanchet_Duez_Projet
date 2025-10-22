@@ -57,7 +57,9 @@ class Game:
             # Fermeture de la fenêtre
             if event.type == pygame.QUIT: 
                 self.running = False  
-
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.pause_menu()  # Appelle le menu pause
 
     # Mise à jour du jeu
     def update(self):
@@ -187,6 +189,48 @@ class Game:
                     elif event.key == pygame.K_RETURN:
                         if options[selected] == "Jouer":
                             menu_running = False  # Quitte le menu et lance le jeu
+                        elif options[selected] == "Quitter":
+                            pygame.quit()
+                            exit()
+
+    def pause_menu(self):
+        font = pygame.font.Font(None, 74)
+        small_font = pygame.font.Font(None, 50)
+        
+        options = ["Continuer", "Quitter"]
+        selected = 0
+        
+        paused = True
+        while paused:
+            self.screen.fill("black")
+            
+            # Titre Pause
+            title_text = font.render("PAUSE", True, "white")
+            title_rect = title_text.get_rect(center=(self.screen_width/2, self.screen_height/4))
+            self.screen.blit(title_text, title_rect)
+            
+            # Options
+            for i, option in enumerate(options):
+                color = "yellow" if i == selected else "white"
+                option_text = small_font.render(option, True, color)
+                option_rect = option_text.get_rect(center=(self.screen_width/2, self.screen_height/2 + i*60))
+                self.screen.blit(option_text, option_rect)
+            
+            pygame.display.flip()
+            
+            # Gestion des événements
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        selected = (selected - 1) % len(options)
+                    elif event.key == pygame.K_DOWN:
+                        selected = (selected + 1) % len(options)
+                    elif event.key == pygame.K_RETURN:
+                        if options[selected] == "Continuer":
+                            paused = False  # Reprend le jeu
                         elif options[selected] == "Quitter":
                             pygame.quit()
                             exit()
