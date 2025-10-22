@@ -14,6 +14,9 @@ class Game:
         self.player = pygame.sprite.GroupSingle(Player((screen_width / 2, screen_height), screen_width))
         self.screen_width = screen_width
         self.screen_height = screen_height
+        self.score = 0          # Score du joueur
+        self.lives = 3          # Nombre de vies
+        self.font = pygame.font.Font(None, 36)  # Police pour l'affichage
 
         # Gestion des ennemis
         self.enemies = pygame.sprite.Group()
@@ -81,6 +84,13 @@ class Game:
         self.player.sprite.lasers.draw(self.screen)
         self.enemy_lasers.draw(self.screen)
         self.walls.draw(self.screen)
+
+        # Affichage du score et des vies
+        score_text = self.font.render(f"Score: {self.score}", True, "white")
+        lives_text = self.font.render(f"Vies: {self.lives}", True, "white")
+        self.screen.blit(score_text, (10, 10))
+        self.screen.blit(lives_text, (self.screen_width - 150, 10))
+
         pygame.display.flip()
 
     def run(self):
@@ -141,9 +151,11 @@ class Game:
                 # Collision avec les ennemis
                 if pygame.sprite.spritecollide(laser, self.enemies, True):
                     laser.kill()
+                    self.score += 100  # +100 points par ennemi détruit
                 # Collision avec l'ennemi extra
                 if pygame.sprite.spritecollide(laser, self.extra, True):
                     laser.kill()
+                    self.score += 500  # +300 points pour l'ennemi bonus
                 # Collision avec les murs
                 hit_walls = pygame.sprite.spritecollide(laser, self.walls, False)
                 if hit_walls:
@@ -157,7 +169,9 @@ class Game:
                 # Collision avec le joueur
                 if pygame.sprite.spritecollide(laser, self.player, False):
                     laser.kill()
-                    self.running = False
+                    self.lives -= 1
+                    if self.lives <= 0:
+                        self.running = False  # Game over
                 # Collision avec les murs
                 hit_walls = pygame.sprite.spritecollide(laser, self.walls, False)
                 if hit_walls:
