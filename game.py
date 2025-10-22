@@ -155,7 +155,7 @@ class Game:
                 # Collision avec l'ennemi extra
                 if pygame.sprite.spritecollide(laser, self.extra, True):
                     laser.kill()
-                    self.score += 500  # +300 points pour l'ennemi bonus
+                    self.score += 1000  # +1000 points pour l'ennemi bonus
                 # Collision avec les murs
                 hit_walls = pygame.sprite.spritecollide(laser, self.walls, False)
                 if hit_walls:
