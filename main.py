@@ -8,6 +8,9 @@ screen_width = 800
 screen_height = 800
 game = Game(screen_width, screen_height)
 
+# Affichage de l'écran d'accueil
+game.show_menu()
+
 # Lancement du jeu
 game.run()
 
