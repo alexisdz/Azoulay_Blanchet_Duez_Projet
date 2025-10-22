@@ -98,6 +98,7 @@ class Game:
             self.handling_events()
             self.update()
             self.laser_hits_wall()
+            self.check_game_over()
             self.display()
             self.clock.tick(60)
 
@@ -268,3 +269,61 @@ class Game:
                         elif options[selected] == "Quitter":
                             pygame.quit()
                             exit()
+
+    def check_game_over(self):
+        # Condition : tous les ennemis sont détruits
+        if not self.enemies:
+            self.end_screen(victory=True)
+
+        # Condition : plus de vies
+        elif self.lives <= 0:
+            self.end_screen(victory=False)
+
+        # Condition : un ennemi touche le joueur
+        for enemy in self.enemies.sprites():
+            if enemy.rect.colliderect(self.player.sprite.rect):
+                self.end_screen(victory=False)
+
+    def end_screen(self, victory=False):
+        font = pygame.font.Font(None, 74)
+        small_font = pygame.font.Font(None, 50)
+
+        if victory:
+            title = "VICTOIRE !"
+            color = "green"
+        else:
+            title = "GAME OVER"
+            color = "red"
+
+        end_running = True
+        while end_running:
+            self.screen.fill("black")
+
+            # Titre (victoire ou défaite)
+            title_text = font.render(title, True, color)
+            title_rect = title_text.get_rect(center=(self.screen_width / 2, self.screen_height / 3))
+            self.screen.blit(title_text, title_rect)
+
+            # Score
+            score_text = small_font.render(f"Score : {self.score}", True, "white")
+            score_rect = score_text.get_rect(center=(self.screen_width / 2, self.screen_height / 2))
+            self.screen.blit(score_text, score_rect)
+
+            # Message de retour
+            msg_text = small_font.render("Appuie sur Entrée pour revenir au menu", True, "gray")
+            msg_rect = msg_text.get_rect(center=(self.screen_width / 2, self.screen_height * 3 / 4))
+            self.screen.blit(msg_text, msg_rect)
+
+            pygame.display.flip()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                    end_running = False
+                    self.show_menu()
+                    self.__init__(self.screen_width, self.screen_height)  # reset du jeu
+                    self.run()
+                    return
+                
