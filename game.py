@@ -6,109 +6,108 @@ from random import choice, randint
 from walls import Wall
 
 class Game:
-    # Initialisation du jeu
     def __init__(self, screen_width, screen_height):
-        pygame.display.set_caption("Space Invaders")  # Nom de la fenêtre
-        self.screen = pygame.display.set_mode((screen_width, screen_height)) # Surface d'affichage
-        self.running = True                # État du jeu
-        self.clock = pygame.time.Clock()   # Gestion du temps
-        self.player = pygame.sprite.GroupSingle(Player((screen_width / 2,screen_height), screen_width)) # Création du joueur
+        pygame.display.set_caption("Space Invaders")
+        self.screen = pygame.display.set_mode((screen_width, screen_height))
+        self.running = True
+        self.clock = pygame.time.Clock()
+        self.player = pygame.sprite.GroupSingle(Player((screen_width / 2, screen_height), screen_width))
         self.screen_width = screen_width
         self.screen_height = screen_height
 
-        # Gestion des ennemies
+        # Gestion des ennemis
         self.enemies = pygame.sprite.Group()
-        self.enemy_setup(rows = 6, cols = 8,screen_width = screen_width)
+        self.enemy_setup(rows=6, cols=8, screen_width=screen_width)
         self.enemy_direction = 1
-        
-		# Gestion de l'ennemie extra
+
+        # Lasers ennemis
+        self.enemy_lasers = pygame.sprite.Group()
+        self.enemy_shoot_timer = 0
+
+        # Ennemi bonus
         self.extra = pygame.sprite.GroupSingle()
-        self.extra_spawn_time = randint(40,80)
-        self.running = True # État du jeu
-        self.clock = pygame.time.Clock() # Gestion du temps
-        
+        self.extra_spawn_time = randint(40, 80)
+
         # Création des murs
         self.walls = pygame.sprite.Group()
+        self.create_walls()
 
+    def create_walls(self):
         # Murs de gauche
-        self.walls.add(Wall(120, screen_height * 3/4))
-        self.walls.add(Wall(120, screen_height * 3/4 + 32))
-        self.walls.add(Wall(152, screen_height * 3/4))
-        self.walls.add(Wall(184, screen_height * 3/4))
-        self.walls.add(Wall(184, screen_height * 3/4 + 32))
+        self.walls.add(Wall(120, self.screen_height * 3 / 4))
+        self.walls.add(Wall(120, self.screen_height * 3 / 4 + 32))
+        self.walls.add(Wall(152, self.screen_height * 3 / 4))
+        self.walls.add(Wall(184, self.screen_height * 3 / 4))
+        self.walls.add(Wall(184, self.screen_height * 3 / 4 + 32))
 
         # Murs du milieu
-        self.walls.add(Wall(screen_width/2 - 48, screen_height * 3/4))
-        self.walls.add(Wall(screen_width/2 - 48, screen_height * 3/4 + 32))
-        self.walls.add(Wall(screen_width/2 - 16, screen_height * 3/4))
-        self.walls.add(Wall(screen_width/2 + 16, screen_height * 3/4))
-        self.walls.add(Wall(screen_width/2 + 16, screen_height * 3/4 + 32))
+        self.walls.add(Wall(self.screen_width / 2 - 48, self.screen_height * 3 / 4))
+        self.walls.add(Wall(self.screen_width / 2 - 48, self.screen_height * 3 / 4 + 32))
+        self.walls.add(Wall(self.screen_width / 2 - 16, self.screen_height * 3 / 4))
+        self.walls.add(Wall(self.screen_width / 2 + 16, self.screen_height * 3 / 4))
+        self.walls.add(Wall(self.screen_width / 2 + 16, self.screen_height * 3 / 4 + 32))
 
         # Murs de droite
-        self.walls.add(Wall(screen_width - 152, screen_height * 3/4))
-        self.walls.add(Wall(screen_width - 152, screen_height * 3/4 + 32))
-        self.walls.add(Wall(screen_width - 184, screen_height * 3/4))
-        self.walls.add(Wall(screen_width - 216, screen_height * 3/4))
-        self.walls.add(Wall(screen_width - 216, screen_height * 3/4 + 32))
+        self.walls.add(Wall(self.screen_width - 152, self.screen_height * 3 / 4))
+        self.walls.add(Wall(self.screen_width - 152, self.screen_height * 3 / 4 + 32))
+        self.walls.add(Wall(self.screen_width - 184, self.screen_height * 3 / 4))
+        self.walls.add(Wall(self.screen_width - 216, self.screen_height * 3 / 4))
+        self.walls.add(Wall(self.screen_width - 216, self.screen_height * 3 / 4 + 32))
 
-    # Gestion des évènements
     def handling_events(self):
-        for event in pygame.event.get():  
-            # Fermeture de la fenêtre
-            if event.type == pygame.QUIT: 
-                self.running = False  
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.pause_menu()  # Appelle le menu pause
+                    self.pause_menu()
 
-    # Mise à jour du jeu
     def update(self):
         self.player.update()
         self.enemies.update(self.enemy_direction)
         self.extra.update()
+        self.enemy_lasers.update()
 
         self.enemy_position_checker()
         self.collision_checks()
         self.extra_enemy_timer()
+        self.enemy_shoot_logic()
 
-    # Affichage du jeu
     def display(self):
-        self.screen.fill("black")          # Nettoyage de l'écran
-        self.player.draw(self.screen)      # Dessin du joueur
-        self.enemies.draw(self.screen)      # Dessin des ennemis
-        self.extra.draw(self.screen)        #Dessin de l'ennemi extra
+        self.screen.fill("black")
+        self.player.draw(self.screen)
+        self.enemies.draw(self.screen)
+        self.extra.draw(self.screen)
         self.player.sprite.lasers.draw(self.screen)
-        self.walls.draw(self.screen)       # Dessin des murs
-        pygame.display.flip()              # Rafraîchissement
+        self.enemy_lasers.draw(self.screen)
+        self.walls.draw(self.screen)
+        pygame.display.flip()
 
-    # Boucle principale
     def run(self):
-        while self.running:               
-            self.handling_events()        
-            self.update() 
-            self.laser_hits_wall()                
-            self.display()                
+        while self.running:
+            self.handling_events()
+            self.update()
+            self.laser_hits_wall()
+            self.display()
             self.clock.tick(60)
-            
-    def enemy_setup(self,rows,cols,screen_width,x_distance=60,y_distance=48,x_offset=70,y_offset=100):
+
+    def enemy_setup(self, rows, cols, screen_width, x_distance=60, y_distance=48, x_offset=70, y_offset=100):
         for row_index, row in enumerate(range(rows)):
             for col_index, col in enumerate(range(cols)):
                 x = col_index * x_distance + x_offset
                 y = row_index * y_distance + y_offset
-                
-                if row_index < 2: # Lignes 0 et 1 (les deux du haut)
-                    enemy_sprite = Enemy((x,y), screen_width, 'bruh')
-                elif row_index < 4: # Lignes 2 et 3 (les deux du milieu)
-                    enemy_sprite = Enemy((x,y), screen_width, 'piruru')
-                else: # Lignes 4 et 5 (les deux dernières)
-                    enemy_sprite = Enemy((x,y), screen_width, 'sgriiipapa')
+
+                if row_index < 2:
+                    enemy_sprite = Enemy((x, y), screen_width, 'bruh')
+                elif row_index < 4:
+                    enemy_sprite = Enemy((x, y), screen_width, 'piruru')
+                else:
+                    enemy_sprite = Enemy((x, y), screen_width, 'sgriiipapa')
                 self.enemies.add(enemy_sprite)
 
-    # Gestion des collisions des ennemies
     def enemy_position_checker(self):
-        all_enemies = self.enemies.sprites()
-        for enemy in all_enemies:
-            if enemy.rect.right >= self.screen_width - 10: # change la direction du groupe si un ennemi touche le bord
+        for enemy in self.enemies.sprites():
+            if enemy.rect.right >= self.screen_width - 10:
                 self.enemy_direction = -1
                 self.enemy_move_down(2)
             elif enemy.rect.left <= 10:
@@ -116,67 +115,92 @@ class Game:
                 self.enemy_move_down(2)
 
     def enemy_move_down(self, distance):
-        if self.enemies:
-            for enemy in self.enemies.sprites():
-                enemy.rect.y += distance
+        for enemy in self.enemies.sprites():
+            enemy.rect.y += distance
 
-    def extra_enemy_timer(self):#gestion de l'ennemi bonus
+    def enemy_shoot_logic(self):
+        """Les ennemis tirent périodiquement vers le joueur"""
+        self.enemy_shoot_timer += 1
+        if self.enemy_shoot_timer >= 60:  # toutes les 60 frames (~1 sec)
+            self.enemy_shoot_timer = 0
+            if self.enemies.sprites():
+                shooter = choice(self.enemies.sprites())
+                laser = Laser(shooter.rect.center, 6, self.screen_height)
+                self.enemy_lasers.add(laser)
+
+    def extra_enemy_timer(self):
         self.extra_spawn_time -= 1
         if self.extra_spawn_time <= 0:
-            self.extra.add(Extra(choice(['right','left']),self.screen_width))#choix aleatoire si l'ennemi apprait à gauche ou à droite
-            self.extra_spawn_time = randint(400,800) # cooldown pour aleatoire sur l'apparition de l'ennemi
+            self.extra.add(Extra(choice(['right', 'left']), self.screen_width))
+            self.extra_spawn_time = randint(400, 800)
 
-    
     def collision_checks(self):
-        # player lasers 
+        # Lasers du joueur
         if self.player.sprite.lasers:
             for laser in self.player.sprite.lasers:
-                # obstacle collisions
-                if pygame.sprite.spritecollide(laser,self.enemies,True):
+                # Collision avec les ennemis
+                if pygame.sprite.spritecollide(laser, self.enemies, True):
                     laser.kill()
+                # Collision avec l'ennemi extra
                 if pygame.sprite.spritecollide(laser, self.extra, True):
-                    laser.kill()    
-       
-    def laser_hits_wall(self):
-        # Vérifier collision entre lasers et murs
-        collisions = pygame.sprite.groupcollide(
-            self.player.sprite.lasers,  # groupe de lasers
-            self.walls,          # groupe de murs
-            True,                # supprime le laser après collision
-            False                # ne supprime pas le mur automatiquement
-        )
+                    laser.kill()
+                # Collision avec les murs
+                hit_walls = pygame.sprite.spritecollide(laser, self.walls, False)
+                if hit_walls:
+                    laser.kill()
+                    for wall in hit_walls:
+                        wall.update()  # abîme le mur
 
-        # Mise à jour des murs lors d'une collision
+        # Lasers ennemis
+        if hasattr(self, 'enemy_lasers') and self.enemy_lasers:
+            for laser in self.enemy_lasers:
+                # Collision avec le joueur
+                if pygame.sprite.spritecollide(laser, self.player, False):
+                    laser.kill()
+                    self.running = False
+                # Collision avec les murs
+                hit_walls = pygame.sprite.spritecollide(laser, self.walls, False)
+                if hit_walls:
+                    laser.kill()
+                    for wall in hit_walls:
+                        wall.update()  # abîme le mur
+
+
+    def laser_hits_wall(self):
+        collisions = pygame.sprite.groupcollide(
+            self.player.sprite.lasers,
+            self.walls,
+            True,
+            False
+        )
         for _, hit_walls in collisions.items():
             for wall in hit_walls:
                 wall.update()
 
+    # --- MENUS ---
     def show_menu(self):
         font = pygame.font.Font(None, 74)
         small_font = pygame.font.Font(None, 50)
-        
+
         options = ["Jouer", "Quitter"]
-        selected = 0  # Option sélectionnée
-        
+        selected = 0
+
         menu_running = True
         while menu_running:
             self.screen.fill("black")
-            
-            # Titre du jeu
+
             title_text = font.render("SPACE INVADERS", True, "white")
-            title_rect = title_text.get_rect(center=(self.screen_width/2, self.screen_height/4))
+            title_rect = title_text.get_rect(center=(self.screen_width / 2, self.screen_height / 4))
             self.screen.blit(title_text, title_rect)
-            
-            # Options du menu
+
             for i, option in enumerate(options):
                 color = "yellow" if i == selected else "white"
                 option_text = small_font.render(option, True, color)
-                option_rect = option_text.get_rect(center=(self.screen_width/2, self.screen_height/2 + i*60))
+                option_rect = option_text.get_rect(center=(self.screen_width / 2, self.screen_height / 2 + i * 60))
                 self.screen.blit(option_text, option_rect)
-            
+
             pygame.display.flip()
-            
-            # Gestion des événements
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -188,7 +212,7 @@ class Game:
                         selected = (selected + 1) % len(options)
                     elif event.key == pygame.K_RETURN:
                         if options[selected] == "Jouer":
-                            menu_running = False  # Quitte le menu et lance le jeu
+                            menu_running = False
                         elif options[selected] == "Quitter":
                             pygame.quit()
                             exit()
@@ -196,29 +220,25 @@ class Game:
     def pause_menu(self):
         font = pygame.font.Font(None, 74)
         small_font = pygame.font.Font(None, 50)
-        
         options = ["Continuer", "Quitter"]
         selected = 0
-        
+
         paused = True
         while paused:
             self.screen.fill("black")
-            
-            # Titre Pause
+
             title_text = font.render("PAUSE", True, "white")
-            title_rect = title_text.get_rect(center=(self.screen_width/2, self.screen_height/4))
+            title_rect = title_text.get_rect(center=(self.screen_width / 2, self.screen_height / 4))
             self.screen.blit(title_text, title_rect)
-            
-            # Options
+
             for i, option in enumerate(options):
                 color = "yellow" if i == selected else "white"
                 option_text = small_font.render(option, True, color)
-                option_rect = option_text.get_rect(center=(self.screen_width/2, self.screen_height/2 + i*60))
+                option_rect = option_text.get_rect(center=(self.screen_width / 2, self.screen_height / 2 + i * 60))
                 self.screen.blit(option_text, option_rect)
-            
+
             pygame.display.flip()
-            
-            # Gestion des événements
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -230,7 +250,7 @@ class Game:
                         selected = (selected + 1) % len(options)
                     elif event.key == pygame.K_RETURN:
                         if options[selected] == "Continuer":
-                            paused = False  # Reprend le jeu
+                            paused = False
                         elif options[selected] == "Quitter":
                             pygame.quit()
                             exit()
