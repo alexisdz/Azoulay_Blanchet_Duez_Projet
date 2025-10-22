@@ -3,12 +3,12 @@ from player import Player
 from enemy import Enemy, Extra
 from laser import Laser
 from random import choice, randint
-
 from walls import Wall
 
 class Game:
     # Initialisation du jeu
     def __init__(self, screen_width, screen_height):
+        pygame.display.set_caption("Space Invaders")  # Nom de la fenêtre
         self.screen = pygame.display.set_mode((screen_width, screen_height)) # Surface d'affichage
         self.running = True                # État du jeu
         self.clock = pygame.time.Clock()   # Gestion du temps
@@ -148,3 +148,45 @@ class Game:
         for _, hit_walls in collisions.items():
             for wall in hit_walls:
                 wall.update()
+
+    def show_menu(self):
+        font = pygame.font.Font(None, 74)
+        small_font = pygame.font.Font(None, 50)
+        
+        options = ["Jouer", "Quitter"]
+        selected = 0  # Option sélectionnée
+        
+        menu_running = True
+        while menu_running:
+            self.screen.fill("black")
+            
+            # Titre du jeu
+            title_text = font.render("SPACE INVADERS", True, "white")
+            title_rect = title_text.get_rect(center=(self.screen_width/2, self.screen_height/4))
+            self.screen.blit(title_text, title_rect)
+            
+            # Options du menu
+            for i, option in enumerate(options):
+                color = "yellow" if i == selected else "white"
+                option_text = small_font.render(option, True, color)
+                option_rect = option_text.get_rect(center=(self.screen_width/2, self.screen_height/2 + i*60))
+                self.screen.blit(option_text, option_rect)
+            
+            pygame.display.flip()
+            
+            # Gestion des événements
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        selected = (selected - 1) % len(options)
+                    elif event.key == pygame.K_DOWN:
+                        selected = (selected + 1) % len(options)
+                    elif event.key == pygame.K_RETURN:
+                        if options[selected] == "Jouer":
+                            menu_running = False  # Quitte le menu et lance le jeu
+                        elif options[selected] == "Quitter":
+                            pygame.quit()
+                            exit()
