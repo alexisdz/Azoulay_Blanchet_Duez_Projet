@@ -84,11 +84,26 @@ class Game:
         Crée des murs que les lasers peuvent toucher et détruire.
         Les murs sont disposés à gauche, au centre et à droite de l'écran.
         """
-        # Exemple pour les murs de gauche
-        self.walls.add(Wall(120, self.screen_height * 3 / 4))
-        self.walls.add(Wall(120, self.screen_height * 3 / 4 + 32))
-        # (idem pour les autres murs, code simplifié ici)
-        # ...
+        # Murs de gauche
+        self.walls.add(Wall(120, self.screen_height * 3/4))
+        self.walls.add(Wall(120, self.screen_height * 3/4 + 32))
+        self.walls.add(Wall(152, self.screen_height * 3/4))
+        self.walls.add(Wall(184, self.screen_height * 3/4))
+        self.walls.add(Wall(184, self.screen_height * 3/4 + 32))
+
+        # Murs du milieu
+        self.walls.add(Wall(self.screen_width/2 - 48, self.screen_height * 3/4))
+        self.walls.add(Wall(self.screen_width/2 - 48, self.screen_height * 3/4 + 32))
+        self.walls.add(Wall(self.screen_width/2 - 16, self.screen_height * 3/4))
+        self.walls.add(Wall(self.screen_width/2 + 16, self.screen_height * 3/4))
+        self.walls.add(Wall(self.screen_width/2 + 16, self.screen_height * 3/4 + 32))
+
+        # Murs de droite
+        self.walls.add(Wall(self.screen_width - 152, self.screen_height * 3/4))
+        self.walls.add(Wall(self.screen_width - 152, self.screen_height * 3/4 + 32))
+        self.walls.add(Wall(self.screen_width - 184, self.screen_height * 3/4))
+        self.walls.add(Wall(self.screen_width - 216, self.screen_height * 3/4))
+        self.walls.add(Wall(self.screen_width - 216, self.screen_height * 3/4 + 32))
 
     def handling_events(self):
         """
