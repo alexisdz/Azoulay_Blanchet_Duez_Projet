@@ -5,12 +5,15 @@ from laser import Laser
 
 class Player(pygame.sprite.Sprite):
     # Initialisation du joueur
-    def __init__(self, pos, constraint):
+    def __init__(self, pos, constraint, shoot_sound):
         super().__init__()
         dir_file = os.path.join(os.path.dirname(__file__), 'assets', 'player')
 
         # Chargement de l'image par défaut
         self.image = pygame.image.load(os.path.join(dir_file, 'player_0.png'))
+
+        # Chargement du son de tir 
+        self.shoot_sound = shoot_sound
 
         self.speed = 5
         self.max_x_constraint = constraint
@@ -61,7 +64,7 @@ class Player(pygame.sprite.Sprite):
     def shoot_laser(self):
         # Tire un laser depuis la position actuelle du joueur
         self.lasers.add(Laser(self.rect.midtop, -8, self.rect.bottom))
-
+        self.shoot_sound.play()
 
     def update(self):
         self.animate()

@@ -9,9 +9,27 @@ class Game:
     def __init__(self, screen_width, screen_height):
         pygame.display.set_caption("Space Invaders")
         self.screen = pygame.display.set_mode((screen_width, screen_height))
+
+        # Initialisation audio
+        pygame.mixer.init()
+        self.shoot_sound = pygame.mixer.Sound("assets/sounds/laser_player.wav")
+        self.enemy_shoot_sound = pygame.mixer.Sound("assets/sounds/laser_enemy.wav")
+        self.explosion_sound = pygame.mixer.Sound("assets/sounds/explosion.wav")
+        self.victory_sound = pygame.mixer.Sound("assets/sounds/victory.wav")
+        self.gameover_sound = pygame.mixer.Sound("assets/sounds/game-over.wav")
+        self.intro_sound = pygame.mixer.Sound("assets/sounds/intro.wav")
+
+        # Réglage du volume
+        self.shoot_sound.set_volume(0.5)
+        self.enemy_shoot_sound.set_volume(0.4)
+        self.explosion_sound.set_volume(0.6)
+        self.victory_sound.set_volume(0.7)
+        self.gameover_sound.set_volume(0.7)
+        self.intro_sound.set_volume(0.7)
+
         self.running = True
         self.clock = pygame.time.Clock()
-        self.player = pygame.sprite.GroupSingle(Player((screen_width / 2, screen_height), screen_width))
+        self.player = pygame.sprite.GroupSingle(Player((screen_width / 2, screen_height), screen_width, self.shoot_sound))
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.score = 0          # Score du joueur
@@ -138,6 +156,7 @@ class Game:
                 shooter = choice(self.enemies.sprites())
                 laser = Laser(shooter.rect.center, 6, self.screen_height)
                 self.enemy_lasers.add(laser)
+                self.enemy_shoot_sound.play()
 
     def extra_enemy_timer(self):
         self.extra_spawn_time -= 1
@@ -153,10 +172,12 @@ class Game:
                 if pygame.sprite.spritecollide(laser, self.enemies, True):
                     laser.kill()
                     self.score += 100  # +100 points par ennemi détruit
+                    self.explosion_sound.play()
                 # Collision avec l'ennemi extra
                 if pygame.sprite.spritecollide(laser, self.extra, True):
                     laser.kill()
                     self.score += 1000  # +1000 points pour l'ennemi bonus
+                    self.explosion_sound.play()
                 # Collision avec les murs
                 hit_walls = pygame.sprite.spritecollide(laser, self.walls, False)
                 if hit_walls:
@@ -193,6 +214,9 @@ class Game:
                 wall.update()
 
     # --- MENUS ---
+    def play_intro(self):
+        self.intro_sound.play()
+
     def show_menu(self):
         font = pygame.font.Font(None, 74)
         small_font = pygame.font.Font(None, 50)
@@ -228,6 +252,7 @@ class Game:
                     elif event.key == pygame.K_RETURN:
                         if options[selected] == "Jouer":
                             menu_running = False
+                            self.intro_sound.stop()
                         elif options[selected] == "Quitter":
                             pygame.quit()
                             exit()
@@ -291,9 +316,11 @@ class Game:
         if victory:
             title = "VICTOIRE !"
             color = "green"
+            self.victory_sound.play()
         else:
             title = "GAME OVER"
             color = "red"
+            self.gameover_sound.play()
 
         end_running = True
         while end_running:
@@ -322,6 +349,12 @@ class Game:
                     exit()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     end_running = False
+                    if victory:
+                        self.victory_sound.stop()
+                    else:
+                        self.gameover_sound.stop()
+
+                    self.play_intro()
                     self.show_menu()
                     self.__init__(self.screen_width, self.screen_height)  # reset du jeu
                     self.run()
