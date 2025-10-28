@@ -1,10 +1,20 @@
 import pygame
 import sys
+import os
 from player import Player
 from enemy import Enemy, Extra
 from laser import Laser
 from random import choice, randint
 from walls import Wall
+
+def resource_path(relative_path):
+    """Obtenir le chemin correct vers les fichiers, même dans l'exe PyInstaller."""
+    try:
+        # PyInstaller crée un dossier temporaire _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 class Game:
     def __init__(self, screen_width, screen_height):
@@ -13,12 +23,12 @@ class Game:
 
         # Initialisation audio
         pygame.mixer.init()
-        self.shoot_sound = pygame.mixer.Sound("assets/sounds/laser_player.wav")
-        self.enemy_shoot_sound = pygame.mixer.Sound("assets/sounds/laser_enemy.wav")
-        self.explosion_sound = pygame.mixer.Sound("assets/sounds/explosion.wav")
-        self.victory_sound = pygame.mixer.Sound("assets/sounds/victory.wav")
-        self.gameover_sound = pygame.mixer.Sound("assets/sounds/game-over.wav")
-        self.intro_sound = pygame.mixer.Sound("assets/sounds/intro.wav")
+        self.shoot_sound = pygame.mixer.Sound(resource_path("assets/sounds/laser_player.wav"))
+        self.enemy_shoot_sound = pygame.mixer.Sound(resource_path("assets/sounds/laser_enemy.wav"))
+        self.explosion_sound = pygame.mixer.Sound(resource_path("assets/sounds/explosion.wav"))
+        self.victory_sound = pygame.mixer.Sound(resource_path("assets/sounds/victory.wav"))
+        self.gameover_sound = pygame.mixer.Sound(resource_path("assets/sounds/game-over.wav"))
+        self.intro_sound = pygame.mixer.Sound(resource_path("assets/sounds/intro.wav"))
 
         # Réglage du volume
         self.shoot_sound.set_volume(0.5)
