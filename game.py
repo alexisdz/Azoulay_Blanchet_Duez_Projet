@@ -1,4 +1,5 @@
 import pygame
+import sys
 from player import Player
 from enemy import Enemy, Extra
 from laser import Laser
@@ -243,7 +244,7 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    exit()
+                    sys.exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
                         selected = (selected - 1) % len(options)
@@ -255,7 +256,7 @@ class Game:
                             self.intro_sound.stop()
                         elif options[selected] == "Quitter":
                             pygame.quit()
-                            exit()
+                            sys.exit()
 
     def pause_menu(self):
         font = pygame.font.Font(None, 74)
@@ -282,7 +283,7 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    exit()
+                    sys.exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
                         selected = (selected - 1) % len(options)
@@ -293,7 +294,7 @@ class Game:
                             paused = False
                         elif options[selected] == "Quitter":
                             pygame.quit()
-                            exit()
+                            sys.exit()
 
     def check_game_over(self):
         # Condition : tous les ennemis sont détruits
@@ -346,7 +347,7 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    exit()
+                    sys.exit()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     end_running = False
                     if victory:
